@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="116" fill="#0d0e11"/>
+  <rect x="22" y="22" width="468" height="468" rx="96" fill="none" stroke="#facc15" stroke-opacity="0.45" stroke-width="5"/>
+  <path d="M92 296 H420" stroke="#ffffff" stroke-opacity="0.22" stroke-width="26" stroke-linecap="round"/>
+  <path d="M92 296 H248" stroke="#38bdf8" stroke-width="14" stroke-linecap="round"/>
+  <path d="M256 108 V296" stroke="#facc15" stroke-width="20" stroke-linecap="round"/>
+  <polygon points="256,246 230,206 282,206" fill="#facc15"/>
+  <rect x="278" y="285" width="40" height="22" rx="11" fill="#facc15"/>
+  <rect x="336" y="285" width="40" height="22" rx="11" fill="#facc15"/>
+  <text x="256" y="426" fill="#facc15" font-family="Arial, sans-serif" font-size="34" font-weight="bold" text-anchor="middle" letter-spacing="3">BP • 2026</text>
+</svg>

@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Промывка. Гидропневмоимпульс — BELYAEV_PROJECT</title>
+  <meta name="description" content="Мобильное PWA-приложение для гидропневмоимпульсной промывки радиаторов и тёплого пола. Разработано BELYAEV_PROJECT." />
+  <meta name="theme-color" content="#0d0e11" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="./icon-192.svg" />
+  <link rel="apple-touch-icon" href="./icon-192.svg" />
+  <style>
+    :root {
+      --bg: #0d0e11;
+      --surface: #161920;
+      --surface-2: #1e222b;
+      --border: rgba(255, 255, 255, 0.12);
+      --border-y: rgba(250, 204, 21, 0.58);
+      --text: #ffffff;
+      --muted: #b8becc;
+      --yellow: #facc15;
+      --yellow-soft: rgba(250, 204, 21, 0.16);
+      --water: #38bdf8;
+      --mix: #34d399;
+      --r-xl: 20px;
+      --r-lg: 16px;
+      --r-md: 12px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      max-width: 100vw;
+      overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.45;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .phone-wrap {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 12px 14px 92px 14px;
+    }
+
+    /* Согласованный мобильный хедер */
+    .m-header {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-xl);
+      padding: 13px 15px;
+      margin-bottom: 12px;
+    }
+
+    .m-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .m-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .m-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      background: var(--yellow-soft);
+      border: 1.5px solid var(--yellow);
+      color: var(--yellow);
+      font-weight: 800;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .m-title {
+      margin: 0;
+      font-size: 16.5px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .m-title span { color: var(--yellow); }
+
+    .m-dev {
+      display: inline-block;
+      margin-top: 5px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--yellow-soft);
+      border: 1px solid var(--border-y);
+      color: var(--yellow);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    #mInstallBtn {
+      display: none;
+      background: var(--yellow);
+      color: #0d0e11;
+      border: none;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .m-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .m-card.focus { border-color: var(--border-y); }
+
+    .m-kicker {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--yellow);
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .m-card h2 {
+      margin: 0 0 6px 0;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .m-desc {
+      margin: 0 0 10px 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .yw { color: var(--yellow); font-weight: 700; }
+
+    .m-btn-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .m-btn {
+      min-height: 44px;
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 7px 10px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: 1.25;
+    }
+
+    .m-btn small { font-size: 11px; opacity: 0.85; font-weight: 600; }
+
+    .m-btn.active {
+      background: var(--yellow);
+      color: #0d0e11;
+      border-color: var(--yellow);
+    }
+
+    .m-btn.ghost-y {
+      background: var(--yellow-soft);
+      border-color: var(--border-y);
+      color: var(--yellow);
+    }
+
+    .m-pill-status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: #0f1116;
+      border: 1px solid var(--border-y);
+      border-radius: var(--r-md);
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .m-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 11.5px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .m-legend span { display: inline-flex; align-items: center; gap: 5px; }
+    .dot-w { width: 9px; height: 9px; border-radius: 50%; background: var(--water); display: inline-block; }
+    .dot-a { width: 9px; height: 9px; border-radius: 50%; background: var(--yellow); display: inline-block; }
+    .dot-s { width: 9px; height: 9px; border-radius: 50%; background: #f59e0b; display: inline-block; }
+
+    .m-svg-box {
+      background: #090a0d;
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 6px;
+      margin-bottom: 10px;
+    }
+
+    .m-svg-box svg { display: block; width: 100%; height: auto; }
+
+    .m-field { margin-bottom: 10px; }
+    .m-field label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 28px;
+      accent-color: var(--yellow);
+      cursor: pointer;
+    }
+
+    select.m-select {
+      width: 100%;
+      min-height: 44px;
+      background: #0f1116;
+      color: var(--text);
+      border: 1px solid var(--border-y);
+      border-radius: var(--r-md);
+      padding: 8px 12px;
+      font-size: 13.5px;
+      font-weight: 600;
+    }
+
+    .m-note {
+      background: rgba(250, 204, 21, 0.1);
+      border-left: 4px solid var(--yellow);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 13px;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .m-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .m-stat {
+      background: #0f1116;
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 10px 12px;
+    }
+
+    .m-stat small { display: block; font-size: 11.5px; color: var(--muted); }
+    .m-stat strong { display: block; margin-top: 2px; font-size: 16px; font-weight: 800; color: var(--yellow); }
+
+    .m-table-scroll {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: var(--r-md);
+      border: 1px solid var(--border);
+    }
+
+    table { width: 100%; border-collapse: collapse; min-width: 420px; }
+    th, td {
+      padding: 8px 9px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 12px;
+      text-align: left;
+    }
+    th { background: #0f1116; color: var(--yellow); font-weight: 800; }
+
+    .m-step {
+      background: #0f1116;
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+    .m-step b { color: var(--yellow); }
+
+    details.m-faq {
+      background: #0f1116;
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 10px 12px;
+      margin-bottom: 8px;
+    }
+    details.m-faq[open] { border-color: var(--border-y); }
+    details.m-faq summary {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      cursor: pointer;
+      list-style: none;
+    }
+    details.m-faq p { margin: 7px 0 0 0; font-size: 12.5px; color: var(--muted); }
+
+    .m-footer {
+      text-align: center;
+      padding: 12px 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .m-footer strong { color: var(--yellow); display: block; margin-top: 2px; }
+
+    /* Широкие кнопки внизу под большой палец (4 экрана) */
+    .m-bottom-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 50;
+      background: rgba(13, 14, 17, 0.97);
+      border-top: 1px solid var(--border-y);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      padding: 7px 8px calc(7px + env(safe-area-inset-bottom)) 8px;
+    }
+
+    .m-nav-item {
+      min-height: 48px;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 6px 4px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+    }
+
+    .m-nav-item .ico { font-size: 16px; line-height: 1; }
+    .m-nav-item.active {
+      background: var(--yellow-soft);
+      color: var(--yellow);
+      border: 1px solid var(--border-y);
+    }
+
+    .m-screen { display: none; }
+    .m-screen.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="phone-wrap">
+    <header class="m-header">
+      <div class="m-top-row">
+        <div class="m-brand">
+          <div class="m-logo">ГПИ</div>
+          <div>
+            <h1 class="m-title">Промывка. <span>Гидропневмоимпульс</span></h1>
+            <span class="m-dev">разработано BELYAEV_PROJECT</span>
+          </div>
+        </div>
+        <button id="mInstallBtn" type="button">Установить</button>
+      </div>
+    </header>
+
+    <!-- ЭКРАН 1: СИМУЛЯЦИЯ + ПРЕСЕТЫ + КАЛЬКУЛЯТОР + ТАБЛИЦА -->
+    <main id="scrSim" class="m-screen active">
+      <section class="m-card focus">
+        <span class="m-kicker">Наглядная физика потока</span>
+        <h2>Вода → Воздух → Вода и срыв шлама</h2>
+        <p class="m-desc">Вода идёт постоянно, клапан кратко впрыскивает воздух (<b>t_on</b>), пакет воздуха срывает налёт со стенок, а в паузе (<b>t_off</b>) вода выносит шлам к грязевику.</p>
+
+        <div class="m-btn-row">
+          <button id="pUfh" class="m-btn" type="button" onclick="pickPreset('ufh')">Тёплый пол<small>0.25 / 1.40 с</small></button>
+          <button id="pRad" class="m-btn active" type="button" onclick="pickPreset('rad')">Радиаторы<small>0.45 / 1.60 с</small></button>
+          <button id="pHeavy" class="m-btn" type="button" onclick="pickPreset('heavy')">Плотный шлам<small>0.55 / 2.10 с</small></button>
+          <button id="pFast" class="m-btn" type="button" onclick="pickPreset('fast')">Тест 50/50<small>0.30 / 0.30 с</small></button>
+        </div>
+
+        <div class="m-pill-status">
+          <span id="mCycleLabel" class="yw">ПАУЗА / ВЫНОС ВОДОЙ</span>
+          <span id="mFreqLabel">0.49 Гц • 22%</span>
+        </div>
+
+        <div class="m-legend">
+          <span><i class="dot-w"></i>Вода (несущий поток)</span>
+          <span><i class="dot-a"></i>Пакет воздуха (t_on)</span>
+          <span><i class="dot-s"></i>Отрыв и вынос шлама</span>
+        </div>
+
+        <!-- Понятная схема трубы: Ввод воды + Импульс воздуха -> Труба со стенками -> Слив и грязевик -->
+        <div class="m-svg-box">
+          <svg viewBox="0 0 420 205" xmlns="http://www.w3.org/2000/svg">
+            <!-- Подписи входов и выходов -->
+            <text x="16" y="16" fill="#38bdf8" font-size="9.5" font-weight="bold">ВВОД ВОДЫ</text>
+            <line x1="45" y1="22" x2="45" y2="48" stroke="#38bdf8" stroke-width="2.5"/>
+            <polygon points="45,52 40,44 50,44" fill="#38bdf8"/>
+
+            <text x="115" y="16" fill="#facc15" font-size="9.5" font-weight="bold" text-anchor="middle">ИМПУЛЬС ВОЗДУХА (t_on)</text>
+            <line id="mAirJet" x1="115" y1="22" x2="115" y2="48" stroke="#facc15" stroke-width="2.5" stroke-dasharray="4 2"/>
+            <polygon points="115,52 110,44 120,44" fill="#facc15"/>
+
+            <text x="366" y="16" fill="#34d399" font-size="9.5" font-weight="bold" text-anchor="middle">СЛИВ + ГРЯЗЕВИК</text>
+
+            <!-- Основная труба -->
+            <rect x="14" y="54" width="392" height="58" rx="10" fill="#0d2233" stroke="#38bdf8" stroke-width="2"/>
+            <!-- Стрелки потока воды -->
+            <path d="M24 83 H56" stroke="#38bdf8" stroke-width="2" stroke-dasharray="5 4"/>
+            <path d="M346 83 H394" stroke="#34d399" stroke-width="2" stroke-dasharray="5 4"/>
+            <!-- Пакеты воздуха и частицы шлама -->
+            <g id="mSlugs"></g>
+            <g id="mSludge"></g>
+
+            <!-- Нижний график импульсов реле -->
+            <rect x="14" y="124" width="392" height="68" rx="10" fill="#10131a" stroke="#2c3240"/>
+            <text x="24" y="138" fill="#b8becc" font-size="9">Сигнал клапана: высокий уровень = впрыск воздуха (t_on), низкий = промывка водой (t_off)</text>
+            <line x1="24" y1="174" x2="396" y2="174" stroke="#383e4d" stroke-width="1.5"/>
+            <polyline id="mWave" points="24,174 24,146 95,146 95,174" fill="none" stroke="#facc15" stroke-width="2.4"/>
+            <line id="mCursor" x1="24" y1="141" x2="24" y2="181" stroke="#34d399" stroke-width="2.2"/>
+          </svg>
+        </div>
+
+        <div class="m-field">
+          <label for="rOn"><span>Импульс воздуха (t_on)</span><span class="yw" id="vOn">0.45 с</span></label>
+          <input id="rOn" type="range" min="0.15" max="0.80" step="0.05" value="0.45" oninput="onRange()" />
+        </div>
+
+        <div class="m-field">
+          <label for="rOff"><span>Пауза с водой (t_off)</span><span class="yw" id="vOff">1.60 с</span></label>
+          <input id="rOff" type="range" min="0.30" max="2.80" step="0.05" value="1.60" oninput="onRange()" />
+        </div>
+
+        <div id="mSimNote" class="m-note"></div>
+      </section>
+
+      <!-- Калькулятор + таблица режимов на том же экране -->
+      <section class="m-card">
+        <span class="m-kicker">Калькулятор и карта режимов</span>
+        <h2>Подбор параметров под ветку</h2>
+
+        <div class="m-field">
+          <select id="cType" class="m-select" onchange="onCalcType()">
+            <option value="rad">Ветка радиаторов (шт.)</option>
+            <option value="ufh">Петля тёплого пола (м)</option>
+          </select>
+        </div>
+
+        <div class="m-field">
+          <label for="cSize"><span id="cSizeLbl">Радиаторов в ветке</span><span class="yw" id="cSizeVal">10 шт.</span></label>
+          <input id="cSize" type="range" min="2" max="24" step="1" value="10" oninput="calcNow()" />
+        </div>
+
+        <div class="m-field">
+          <label for="cPress"><span>Давление воды на входе</span><span class="yw" id="cPressVal">2.0 бар</span></label>
+          <input id="cPress" type="range" min="1.2" max="3.2" step="0.1" value="2.0" oninput="calcNow()" />
+        </div>
+
+        <div class="m-stats">
+          <div class="m-stat"><small>Импульс (t_on)</small><strong id="sTon">0.44 с</strong></div>
+          <div class="m-stat"><small>Пауза (t_off)</small><strong id="sToff">1.75 с</strong></div>
+          <div class="m-stat"><small>Воздух на редукторе</small><strong id="sAir">2.4 бар</strong></div>
+          <div class="m-stat"><small>Время на ветку</small><strong id="sMin">17 мин</strong></div>
+        </div>
+
+        <div class="m-table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Контур</th>
+                <th>t_on</th>
+                <th>t_off</th>
+                <th>Воздух</th>
+                <th>Серии</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Тёплый пол</strong></td>
+                <td class="yw">0.25–0.44 с</td>
+                <td>1.40–2.68 с</td>
+                <td>+0.3 бар</td>
+                <td>30 с / 15 с вода</td>
+              </tr>
+              <tr>
+                <td><strong>Радиаторы</strong></td>
+                <td class="yw">0.31–0.62 с</td>
+                <td>1.24–2.43 с</td>
+                <td>+0.4 бар</td>
+                <td>35 с / 15 с вода</td>
+              </tr>
+              <tr>
+                <td><strong>Плотный шлам</strong></td>
+                <td class="yw">0.55 с</td>
+                <td>2.10 с</td>
+                <td>+0.5 бар</td>
+                <td>25 с / 20 с вода</td>
+              </tr>
+              <tr>
+                <td><strong>Тест 50/50</strong></td>
+                <td class="yw">0.30 с</td>
+                <td>0.30 с</td>
+                <td>+0.3 бар</td>
+                <td>Короткие ветки</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <!-- ЭКРАН 2: СХЕМА -->
+    <section id="scrScheme" class="m-screen">
+      <div class="m-card focus">
+        <span class="m-kicker">Сборка узла смешения</span>
+        <h2>Схема с двумя обратными клапанами и 2 манометрами</h2>
+        <p class="m-desc">Нажмите этап <span class="yw">1–6</span> для проверки порядка запуска.</p>
+
+        <div class="m-btn-row">
+          <button class="m-btn ghost-y" type="button" onclick="showStep(1)">1. Вода и котёл</button>
+          <button class="m-btn ghost-y" type="button" onclick="showStep(2)">2. Сброс и грязевик</button>
+          <button class="m-btn ghost-y" type="button" onclick="showStep(3)">3. Компрессор</button>
+          <button class="m-btn ghost-y" type="button" onclick="showStep(4)">4. Влагоотд. и редуктор</button>
+          <button class="m-btn ghost-y" type="button" onclick="showStep(5)">5. Клапан и реле</button>
+          <button class="m-btn ghost-y" type="button" onclick="showStep(6)">6. Серии и слив</button>
+        </div>
+
+        <div class="m-svg-box">
+          <svg viewBox="0 0 420 228" xmlns="http://www.w3.org/2000/svg">
+            <text x="12" y="18" fill="#38bdf8" font-size="9.5" font-weight="bold">ВОДА</text>
+            <rect x="12" y="25" width="94" height="32" rx="6" fill="#181d27" stroke="#38bdf8"/>
+            <text x="59" y="45" fill="#fff" font-size="9" font-weight="bold" text-anchor="middle">Кран 1 + Фильтр</text>
+
+            <rect x="114" y="25" width="84" height="32" rx="6" fill="#181d27" stroke="#facc15"/>
+            <text x="156" y="45" fill="#facc15" font-size="9" font-weight="bold" text-anchor="middle">Манометр 1</text>
+
+            <rect x="206" y="25" width="98" height="32" rx="6" fill="#181d27" stroke="#38bdf8"/>
+            <text x="255" y="45" fill="#fff" font-size="9" font-weight="bold" text-anchor="middle">Обратн. кл. 1</text>
+
+            <text x="12" y="77" fill="#facc15" font-size="9.5" font-weight="bold">ВОЗДУХ (быстрый НЗ соленоид — не сервопривод!)</text>
+            <rect x="12" y="84" width="128" height="32" rx="6" fill="#231f12" stroke="#facc15"/>
+            <text x="76" y="104" fill="#facc15" font-size="9" font-weight="bold" text-anchor="middle">Влагоотд. + Редуктор</text>
+
+            <rect x="148" y="84" width="132" height="32" rx="6" fill="#231f12" stroke="#facc15"/>
+            <text x="214" y="104" fill="#fff" font-size="9" font-weight="bold" text-anchor="middle">Клапан + Реле (t_on/off)</text>
+
+            <rect x="288" y="84" width="120" height="32" rx="6" fill="#231f12" stroke="#facc15"/>
+            <text x="348" y="104" fill="#facc15" font-size="9" font-weight="bold" text-anchor="middle">Обратн. кл. 2</text>
+
+            <rect x="12" y="134" width="194" height="34" rx="6" fill="#132521" stroke="#34d399"/>
+            <text x="109" y="155" fill="#6ee7b7" font-size="9" font-weight="bold" text-anchor="middle">Тройник смешения + Манометр 2</text>
+
+            <rect x="214" y="134" width="194" height="34" rx="6" fill="#122420" stroke="#34d399"/>
+            <text x="311" y="155" fill="#fff" font-size="9" font-weight="bold" text-anchor="middle">1 ветка контура (котёл отсечён)</text>
+
+            <rect x="12" y="180" width="396" height="34" rx="6" fill="#181d27" stroke="#facc15"/>
+            <text x="210" y="201" fill="#facc15" font-size="9" font-weight="bold" text-anchor="middle">Обратка → Грязевик / отстойник → Кран сброса → Слив</text>
+          </svg>
+        </div>
+
+        <div id="mStepInfo" class="m-note"></div>
+      </div>
+    </section>
+
+    <!-- ЭКРАН 3: РЕГЛАМЕНТ -->
+    <section id="scrReg" class="m-screen">
+      <div class="m-card focus">
+        <span class="m-kicker">Пошаговая работа на объекте</span>
+        <h2>Регламент и контроль чистоты</h2>
+        <div class="m-step"><b>1. Котёл и арматура:</b> перекройте подачу и обратку котла, снимите термоголовки, откройте расходомеры.</div>
+        <div class="m-step"><b>2. По одной ветке:</b> сначала радиаторные ветки, затем отдельно петли ТП. Перед закрытием одной ветки откройте следующую.</div>
+        <div class="m-step"><b>3. Признаки чистоты:</b> вода на сливе прозрачная, тёмные сгустки не вылетают после 2–3 серий, осадок в грязевике не растёт.</div>
+        <div class="m-step"><b>4. Финиш:</b> выключите воздух и пролейте ветку чистой водой <b>1–2 мин</b>, затем промойте грязевик и развоздушьте контур.</div>
+      </div>
+    </section>
+
+    <!-- ЭКРАН 4: FAQ -->
+    <section id="scrFaq" class="m-screen">
+      <div class="m-card focus">
+        <span class="m-kicker">Практика эксплуатации</span>
+        <h2>Частые вопросы при работе станции</h2>
+
+        <details class="m-faq" open>
+          <summary>Как подключиться к ТП со смесительным узлом?</summary>
+          <p>Отсеките смесительный узел кранами, чтобы не забить шламом насос и трёхходовой клапан, и подайте смесь напрямую в коллектор тёплого пола.</p>
+        </details>
+
+        <details class="m-faq">
+          <summary>Что делать, если ветка почти не пропускает воду?</summary>
+          <p>Проверьте шток клапана и расходомер. Если проход слабый — пустите поток в обратном направлении (в обратку ветки, слив с подачи) на 2–3 мин в пределах рабочего давления.</p>
+        </details>
+
+        <details class="m-faq">
+          <summary>Какая температура воды безопасна?</summary>
+          <p>Оптимально до <span class="yw">+35…+45 °C</span>. Кипяток выше +55…60 °C может повредить мембраны клапанов, шланги и колбы.</p>
+        </details>
+
+        <details class="m-faq">
+          <summary>Как защитить компрессор и манометры?</summary>
+          <p>Держите воздушный узел выше тройника смешения, запускайте воздух до воды, а при остановке сначала закрывайте воду и продувайте узел воздухом. На манометр 2 поставьте краник-демпфер.</p>
+        </details>
+
+        <details class="m-faq">
+          <summary>Когда нужна химия, а не только импульс?</summary>
+          <p>Импульс отлично снимает шлам, ржавчину, ил и биоплёнку. Плотный известковый камень (накипь) сначала размягчают профильным реагентом.</p>
+        </details>
+      </div>
+    </section>
+
+    <footer class="m-footer">
+      <div>Промывка. Гидропневмоимпульс • PWA 2026</div>
+      <strong>разработано BELYAEV_PROJECT</strong>
+    </footer>
+  </div>
+
+  <!-- 4 ШИРОКИЕ КНОПКИ НИЖНЕЙ НАВИГАЦИИ ПОД ПАЛЕЦ -->
+  <nav class="m-bottom-nav" aria-label="Нижняя навигация">
+    <button id="nSim" class="m-nav-item active" type="button" onclick="go('Sim')"><span class="ico">⚡</span><span>Симуляция</span></button>
+    <button id="nScheme" class="m-nav-item" type="button" onclick="go('Scheme')"><span class="ico">🔧</span><span>Схема</span></button>
+    <button id="nReg" class="m-nav-item" type="button" onclick="go('Reg')"><span class="ico">📋</span><span>Регламент</span></button>
+    <button id="nFaq" class="m-nav-item" type="button" onclick="go('Faq')"><span class="ico">❓</span><span>FAQ</span></button>
+  </nav>
+
+  <script>
+    function go(name) {
+      var list = ["Sim", "Scheme", "Reg", "Faq"];
+      for (var i = 0; i < list.length; i++) {
+        var k = list[i];
+        document.getElementById("scr" + k).className = (k === name) ? "m-screen active" : "m-screen";
+        document.getElementById("n" + k).className = (k === name) ? "m-nav-item active" : "m-nav-item";
+      }
+      window.scrollTo(0, 0);
+    }
+
+    var presets = {
+      ufh: { tOn: 0.25, tOff: 1.40, txt: "<b>Тёплый пол (0.25 / 1.40 с):</b> частый мягкий сдвиг для труб 16–20 мм без завоздушивания длинной петли." },
+      rad: { tOn: 0.45, tOff: 1.60, txt: "<b>Радиаторы (0.45 / 1.60 с):</b> взмучивает шлам в секциях и выносит его к грязевику в паузе." },
+      heavy: { tOn: 0.55, tOff: 2.10, txt: "<b>Плотный шлам (0.55 / 2.10 с):</b> усиленный пакет воздуха + длинная пауза для выноса осадка." },
+      fast: { tOn: 0.30, tOff: 0.30, txt: "<b>Тест 0.30 / 0.30 с:</b> высокая частота 1.67 Гц; на длинных петлях ТП паузу лучше увеличить." }
+    };
+
+    var cfg = { tOn: 0.45, tOff: 1.60 };
+    var clock = 0;
+    var seeds = [];
+    for (var i = 0; i < 18; i++) seeds.push((i * 22.0) % 340);
+
+    function pickPreset(k) {
+      var p = presets[k];
+      cfg.tOn = p.tOn;
+      cfg.tOff = p.tOff;
+      document.getElementById("rOn").value = p.tOn;
+      document.getElementById("rOff").value = p.tOff;
+      document.getElementById("mSimNote").innerHTML = p.txt;
+      var ids = { ufh: "pUfh", rad: "pRad", heavy: "pHeavy", fast: "pFast" };
+      for (var key in ids) {
+        if (Object.prototype.hasOwnProperty.call(ids, key)) {
+          document.getElementById(ids[key]).className = (key === k) ? "m-btn active" : "m-btn";
+        }
+      }
+      onRange(true);
+    }
+
+    function onRange(keep) {
+      cfg.tOn = parseFloat(document.getElementById("rOn").value);
+      cfg.tOff = parseFloat(document.getElementById("rOff").value);
+      document.getElementById("vOn").textContent = cfg.tOn.toFixed(2) + " с";
+      document.getElementById("vOff").textContent = cfg.tOff.toFixed(2) + " с";
+      var per = cfg.tOn + cfg.tOff;
+      var hz = (1 / per).toFixed(2);
+      var duty = Math.round((cfg.tOn / per) * 100);
+      document.getElementById("mFreqLabel").textContent = hz + " Гц • " + duty + "%";
+      if (!keep) {
+        document.getElementById("mSimNote").innerHTML = "<b>Свой режим:</b> цикл " + per.toFixed(2) + " с (" + hz + " Гц), доля воздуха " + duty + "%.";
+      }
+      drawWave();
+    }
+
+    function drawWave() {
+      var per = cfg.tOn + cfg.tOff;
+      var win = 4.2;
+      var x0 = 24, w = 372, y0 = 174, y1 = 146;
+      var pts = [];
+      var t = 0;
+      while (t < win) {
+        var t1 = Math.min(win, t + cfg.tOn);
+        var t2 = Math.min(win, t + per);
+        var px0 = x0 + (t / win) * w;
+        var px1 = x0 + (t1 / win) * w;
+        var px2 = x0 + (t2 / win) * w;
+        pts.push(px0.toFixed(1) + "," + y0);
+        pts.push(px0.toFixed(1) + "," + y1);
+        pts.push(px1.toFixed(1) + "," + y1);
+        if (t1 < win) {
+          pts.push(px1.toFixed(1) + "," + y0);
+          pts.push(px2.toFixed(1) + "," + y0);
+        }
+        t += per;
+      }
+      document.getElementById("mWave").setAttribute("points", pts.join(" "));
+    }
+
+    function tickSim() {
+      clock += 0.035;
+      var per = cfg.tOn + cfg.tOff;
+      var open = (clock % per) < cfg.tOn;
+      var lbl = document.getElementById("mCycleLabel");
+      var jet = document.getElementById("mAirJet");
+      if (open) {
+        lbl.textContent = "ВПРЫСК ВОЗДУХА (" + cfg.tOn.toFixed(2) + " с)";
+        lbl.style.color = "#facc15";
+        jet.setAttribute("stroke", "#facc15");
+      } else {
+        lbl.textContent = "ВЫНОС ВОДОЙ (" + cfg.tOff.toFixed(2) + " с)";
+        lbl.style.color = "#34d399";
+        jet.setAttribute("stroke", "#4b5563");
+      }
+
+      var spd = 135;
+      var sw = Math.max(22, cfg.tOn * spd * 0.85);
+      var step = per * spd;
+      var shift = (clock * spd) % step;
+      var sHtml = "", ranges = [];
+      for (var k = -1; k < 5; k++) {
+        var xH = 18 + shift + k * step;
+        var xT = xH - sw;
+        var dx = Math.max(18, xT);
+        var dw = Math.min(398, xH) - dx;
+        if (dw > 3) {
+          sHtml += '<rect x="' + dx.toFixed(1) + '" y="62" width="' + dw.toFixed(1) + '" height="40" rx="8" fill="#facc15" fill-opacity="0.86"/>';
+          ranges.push([dx, dx + dw]);
+        }
+      }
+      document.getElementById("mSlugs").innerHTML = sHtml;
+
+      var dHtml = "";
+      for (var i = 0; i < seeds.length; i++) {
+        var sx = 22 + ((seeds[i] + clock * 72) % 372);
+        var sy = 104;
+        for (var r = 0; r < ranges.length; r++) {
+          var a = ranges[r][0], b = ranges[r][1];
+          if (Math.abs(sx - a) < 22 || Math.abs(sx - b) < 22) {
+            sy = 72 + 18 * Math.sin(clock * 14 + i);
+            break;
+          }
+        }
+        dHtml += '<circle cx="' + sx.toFixed(1) + '" cy="' + sy.toFixed(1) + '" r="3.4" fill="#f59e0b" stroke="#fef08a" stroke-width="0.7"/>';
+      }
+      document.getElementById("mSludge").innerHTML = dHtml;
+
+      var cx = 24 + (((clock % 4.2) / 4.2) * 372);
+      document.getElementById("mCursor").setAttribute("x1", cx.toFixed(1));
+      document.getElementById("mCursor").setAttribute("x2", cx.toFixed(1));
+    }
+
+    function onCalcType() {
+      var t = document.getElementById("cType").value;
+      var sl = document.getElementById("cSize");
+      if (t === "rad") {
+        sl.min = 2; sl.max = 24; sl.step = 1; sl.value = 10;
+        document.getElementById("cSizeLbl").textContent = "Радиаторов в ветке";
+      } else {
+        sl.min = 20; sl.max = 150; sl.step = 5; sl.value = 80;
+        document.getElementById("cSizeLbl").textContent = "Длина 1 петли ТП";
+      }
+      calcNow();
+    }
+
+    function calcNow() {
+      var t = document.getElementById("cType").value;
+      var v = parseFloat(document.getElementById("cSize").value);
+      var p = parseFloat(document.getElementById("cPress").value);
+      document.getElementById("cPressVal").textContent = p.toFixed(1) + " бар";
+      var ton, toff, air, mins;
+      if (t === "rad") {
+        document.getElementById("cSizeVal").textContent = Math.round(v) + " шт.";
+        ton = (0.22 + 0.022 * v).toFixed(2);
+        toff = (0.90 + 0.085 * v).toFixed(2);
+        air = Math.min(3.0, p + 0.4).toFixed(1);
+        mins = Math.round(Math.max(8, Math.min(35, 6 + v * 1.1)));
+      } else {
+        document.getElementById("cSizeVal").textContent = Math.round(v) + " м";
+        ton = (0.18 + 0.0022 * v).toFixed(2);
+        toff = (1.00 + 0.014 * v).toFixed(2);
+        air = Math.min(2.4, p + 0.3).toFixed(1);
+        mins = Math.round(Math.max(8, Math.min(30, 7 + v * 0.12)));
+      }
+      document.getElementById("sTon").textContent = ton + " с";
+      document.getElementById("sToff").textContent = toff + " с";
+      document.getElementById("sAir").textContent = air + " бар";
+      document.getElementById("sMin").textContent = mins + " мин";
+    }
+
+    var stepsText = {
+      1: "<b>Шаг 1:</b> Закройте краны котла, оставьте открытой 1 ветку коллектора и плавно откройте ввод воды.",
+      2: "<b>Шаг 2:</b> Откройте кран сброса на слив и убедитесь, что грязевик чист и закреплён.",
+      3: "<b>Шаг 3:</b> Запустите компрессор и дождитесь набора давления в ресивере.",
+      4: "<b>Шаг 4:</b> Слейте влагу из влагоотделителя и выставьте редуктором воздух на +0.2…0.5 бар к воде.",
+      5: "<b>Шаг 5:</b> Запустите реле импульсов на быстродействующем соленоидном клапане.",
+      6: "<b>Шаг 6:</b> Работайте сериями (30–35 с импульсы / 15–20 с вода), контролируя чистоту на сливе."
+    };
+    function showStep(n) {
+      document.getElementById("mStepInfo").innerHTML = stepsText[n] || stepsText[1];
+    }
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("./sw.js").catch(function () {});
+      });
+    }
+
+    var defPrompt = null;
+    var instBtn = document.getElementById("mInstallBtn");
+    window.addEventListener("beforeinstallprompt", function (e) {
+      e.preventDefault();
+      defPrompt = e;
+      instBtn.style.display = "inline-block";
+    });
+    instBtn.addEventListener("click", function () {
+      if (!defPrompt) return;
+      defPrompt.prompt();
+      defPrompt.userChoice.then(function () {
+        defPrompt = null;
+        instBtn.style.display = "none";
+      });
+    });
+
+    pickPreset("rad");
+    calcNow();
+    showStep(1);
+    setInterval(tickSim, 35);
+  </script>
+</body>
+</html>

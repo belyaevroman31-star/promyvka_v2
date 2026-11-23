@@ -1,0 +1,26 @@
+{
+  "name": "Промывка. Гидропневмоимпульс — BELYAEV_PROJECT",
+  "short_name": "Гидропневмоимпульс",
+  "description": "Мобильная PWA-станция промывки радиаторов и тёплого пола. Разработано BELYAEV_PROJECT.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0d0e11",
+  "theme_color": "#0d0e11",
+  "orientation": "portrait",
+  "lang": "ru",
+  "icons": [
+    {
+      "src": "./icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
